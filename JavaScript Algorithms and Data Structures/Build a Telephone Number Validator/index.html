@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telephone Number Validator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        #results-div {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Telephone Number Validator</h1>
+    <input type="text" id="user-input" placeholder="Enter a phone number">
+    <button id="check-btn">Check</button>
+    <button id="clear-btn">Clear</button>
+    <div id="results-div"></div>
+
+    <script>
+        function validateUSPhoneNumber(number) {
+            const validPatterns = [
+                /^1?\s?\d{3}[-\s]?\d{3}[-\s]?\d{4}$/,
+                /^1?\s?\(\d{3}\)\s?\d{3}[-\s]?\d{4}$/,
+                /^1?\s?\d{3}[-\s]?\d{3}[-\s]?\d{4}$/,
+                /^1?\(\d{3}\)\d{3}[-\s]?\d{4}$/,
+                /^\d{10}$/
+            ];
+
+            return validPatterns.some(pattern => pattern.test(number));
+        }
+
+        document.getElementById('check-btn').addEventListener('click', function() {
+            const input = document.getElementById('user-input').value.trim();
+            const resultsDiv = document.getElementById('results-div');
+
+            if (input === '') {
+                alert('Please provide a phone number');
+                return;
+            }
+
+            if (validateUSPhoneNumber(input)) {
+                resultsDiv.textContent = `Valid US number: ${input}`;
+            } else {
+                resultsDiv.textContent = `Invalid US number: ${input}`;
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            document.getElementById('user-input').value = '';
+            document.getElementById('results-div').textContent = '';
+        });
+    </script>
+</body>
+</html>
