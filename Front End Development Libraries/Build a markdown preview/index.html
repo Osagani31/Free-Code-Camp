@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Previewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+  <style>
+    body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 20px;
+}
+
+.editor-container, .preview-container {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+h2 {
+  background-color: #4a90e2;
+  color: white;
+  margin: 0;
+  padding: 10px 15px;
+  font-size: 1.2rem;
+}
+
+.editor {
+  min-height: 300px;
+  padding: 15px;
+  border: none;
+  resize: vertical;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.preview {
+  min-height: 300px;
+  padding: 15px;
+  overflow-wrap: break-word;
+}
+
+/* Markdown styling */
+#preview h1 {
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+#preview h2 {
+  background-color: transparent;
+  color: inherit;
+  border-bottom: 1px solid #eee;
+  padding: 0;
+  padding-bottom: 5px;
+  margin-top: 20px;
+}
+
+#preview code {
+  background-color: #f6f8fa;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+#preview pre {
+  background-color: #f6f8fa;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+#preview blockquote {
+  border-left: 4px solid #4a90e2;
+  padding-left: 15px;
+  color: #555;
+  margin-left: 0;
+}
+
+#preview img {
+  max-width: 100%;
+}
+
+#preview ul, #preview ol {
+  padding-left: 20px;
+}
+
+#preview a {
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+#preview a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .app {
+    flex-direction: row;
+    height: calc(100vh - 40px);
+  }
+  
+  .editor-container, .preview-container {
+    flex: 1;
+    height: 100%;
+  }
+  
+  .editor, .preview {
+    min-height: calc(100% - 42px);
+  }
+}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+</body>
+</html>
+

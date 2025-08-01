@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>25 + 5 Clock</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    .timer-container {
+      background-color: #333;
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #4a90e2;
+    }
+
+    .length-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .break-control, .session-control {
+      background-color: #444;
+      padding: 10px;
+      border-radius: 5px;
+      width: 45%;
+    }
+
+    #break-label, #session-label {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      margin: 0 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #357ab8;
+    }
+
+    #break-length, #session-length {
+      font-size: 1.5rem;
+      display: inline-block;
+      width: 30px;
+    }
+
+    .timer-display {
+      background-color: #444;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    #timer-label {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    #time-left {
+      font-size: 3rem;
+      font-family: 'Digital', monospace;
+    }
+
+    .timer-buttons button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 1.2rem;
+    }
+
+    @font-face {
+      font-family: 'Digital';
+      src: url('https://cdn.jsdelivr.net/gh/andybrewer/mvp/fonts/digital-7.mono.ttf') format('truetype');
+    }
+  </style>
+</head>
+<body>
+  <div class="timer-container">
+    <h1>25 + 5 Clock</h1>
+    
+    <div class="length-controls">
+      <div class="break-control">
+        <div id="break-label">Break Length</div>
+        <button id="break-decrement">-</button>
+        <div id="break-length">5</div>
+        <button id="break-increment">+</button>
+      </div>
+      
+      <div class="session-control">
+        <div id="session-label">Session Length</div>
+        <button id="session-decrement">-</button>
+        <div id="session-length">25</div>
+        <button id="session-increment">+</button>
+      </div>
+    </div>
+    
+    <div class="timer-display">
+      <div id="timer-label">Session</div>
+      <div id="time-left">25:00</div>
+    </div>
+    
+    <div class="timer-buttons">
+      <button id="start_stop">Start</button>
+      <button id="reset">Reset</button>
+    </div>
+    
+    <audio 
+      id="beep" 
+      src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav" 
+      preload="auto"
+    />
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const breakLengthElement = document.getElementById('break-length');
+      const sessionLengthElement = document.getElementById('session-length');
+      const timeLeftElement = document.getElementById('time-left');
+      const timerLabelElement = document.getElementById('timer-label');
+      const beepSound = document.getElementById('beep');
+      
+      // State variables
+      let breakLength = 5;
+      let sessionLength = 25;
+      let timeLeft = sessionLength * 60;
+      let timerRunning = false;
+      let sessionType = 'Session';
+      let timerInterval;
+      
+      // Format time as mm:ss
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const remainingSeconds = (seconds % 60).toString().padStart(2, '0');
+        return `${minutes}:${remainingSeconds}`;
+      }
+      
+      // Update the display
+      function updateDisplay() {
+        breakLengthElement.textContent = breakLength;
+        sessionLengthElement.textContent = sessionLength;
+        timeLeftElement.textContent = formatTime(timeLeft);
+        timerLabelElement.textContent = sessionType;
+      }
+      
+      // Reset everything
+      function reset() {
+        clearInterval(timerInterval);
+        breakLength = 5;
+        sessionLength = 25;
+        timeLeft = sessionLength * 60;
+        timerRunning = false;
+        sessionType = 'Session';
+        document.getElementById('start_stop').textContent = 'Start';
+        beepSound.pause();
+        beepSound.currentTime = 0;
+        updateDisplay();
+      }
+      
+      // Start or stop the timer
+      function toggleTimer() {
+        timerRunning = !timerRunning;
+        document.getElementById('start_stop').textContent = timerRunning ? 'Pause' : 'Start';
+        
+        if (timerRunning) {
+          timerInterval = setInterval(() => {
+            timeLeft--;
+            
+            if (timeLeft < 0) {
+              // Time's up - switch session type
+              beepSound.play();
+              if (sessionType === 'Session') {
+                sessionType = 'Break';
+                timeLeft = breakLength * 60;
+              } else {
+                sessionType = 'Session';
+                timeLeft = sessionLength * 60;
+              }
+            }
+            
+            updateDisplay();
+          }, 1000);
+        } else {
+          clearInterval(timerInterval);
+        }
+      }
+      
+      // Event listeners for buttons
+      document.getElementById('break-decrement').addEventListener('click', function() {
+        if (breakLength > 1) {
+          breakLength--;
+          if (sessionType === 'Break' && !timerRunning) {
+            timeLeft = breakLength * 60;
+          }
+          updateDisplay();
+        }
+      });
+      
+      document.getElementById('break-increment').addEventListener('click', function() {
+        if (breakLength < 60) {
+          breakLength++;
+          if (sessionType === 'Break' && !timerRunning) {
+            timeLeft = breakLength * 60;
+          }
+          updateDisplay();
+        }
+      });
+      
+      document.getElementById('session-decrement').addEventListener('click', function() {
+        if (sessionLength > 1) {
+          sessionLength--;
+          if (sessionType === 'Session' && !timerRunning) {
+            timeLeft = sessionLength * 60;
+          }
+          updateDisplay();
+        }
+      });
+      
+      document.getElementById('session-increment').addEventListener('click', function() {
+        if (sessionLength < 60) {
+          sessionLength++;
+          if (sessionType === 'Session' && !timerRunning) {
+            timeLeft = sessionLength * 60;
+          }
+          updateDisplay();
+        }
+      });
+      
+      document.getElementById('start_stop').addEventListener('click', toggleTimer);
+      document.getElementById('reset').addEventListener('click', reset);
+      
+      // Initialize display
+      updateDisplay();
+    });
+  </script>
+
+  <!-- FreeCodeCamp Test Script -->
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+</body>
+</html>
