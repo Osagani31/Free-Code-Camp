@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Calculator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .calculator {
+      width: 320px;
+      background-color: #333;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .display {
+      background-color: #222;
+      color: white;
+      font-size: 2.5rem;
+      padding: 20px;
+      text-align: right;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 5px;
+      padding: 20px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-number {
+      background-color: #666;
+      color: white;
+    }
+
+    .btn-number:hover {
+      background-color: #777;
+    }
+
+    .btn-number:active {
+      background-color: #888;
+    }
+
+    .btn-operator {
+      background-color: #ff9500;
+      color: white;
+    }
+
+    .btn-operator:hover {
+      background-color: #ffaa33;
+    }
+
+    .btn-operator:active {
+      background-color: #ffbb55;
+    }
+
+    .btn-ac {
+      background-color: #a5a5a5;
+      color: black;
+      grid-column: span 2;
+    }
+
+    .btn-ac:hover {
+      background-color: #bbbbbb;
+    }
+
+    .btn-ac:active {
+      background-color: #cccccc;
+    }
+
+    .btn-equals {
+      background-color: #ff9500;
+      color: white;
+      grid-row: span 2;
+    }
+
+    .btn-equals:hover {
+      background-color: #ffaa33;
+    }
+
+    .btn-equals:active {
+      background-color: #ffbb55;
+    }
+
+    .btn-zero {
+      grid-column: span 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div id="display" class="display">0</div>
+    <div class="keypad">
+      <button id="clear" class="btn-ac">AC</button>
+      <button id="divide" class="btn-operator">/</button>
+      <button id="multiply" class="btn-operator">*</button>
+      <button id="seven" class="btn-number">7</button>
+      <button id="eight" class="btn-number">8</button>
+      <button id="nine" class="btn-number">9</button>
+      <button id="subtract" class="btn-operator">-</button>
+      <button id="four" class="btn-number">4</button>
+      <button id="five" class="btn-number">5</button>
+      <button id="six" class="btn-number">6</button>
+      <button id="add" class="btn-operator">+</button>
+      <button id="one" class="btn-number">1</button>
+      <button id="two" class="btn-number">2</button>
+      <button id="three" class="btn-number">3</button>
+      <button id="equals" class="btn-equals">=</button>
+      <button id="zero" class="btn-number btn-zero">0</button>
+      <button id="decimal" class="btn-number">.</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const display = document.getElementById('display');
+      let currentInput = '0';
+      let previousInput = '';
+      let operation = null;
+      let resetInput = false;
+
+      // Update the display
+      function updateDisplay() {
+        display.textContent = currentInput;
+      }
+
+      // Handle number input
+      function inputNumber(number) {
+        if (currentInput === '0' || resetInput) {
+          currentInput = number;
+          resetInput = false;
+        } else {
+          currentInput += number;
+        }
+        updateDisplay();
+      }
+
+      // Handle decimal input
+      function inputDecimal() {
+        if (resetInput) {
+          currentInput = '0.';
+          resetInput = false;
+          updateDisplay();
+          return;
+        }
+        if (!currentInput.includes('.')) {
+          currentInput += '.';
+          updateDisplay();
+        }
+      }
+
+      // Handle operator input
+      function inputOperator(op) {
+        const inputValue = parseFloat(currentInput);
+        
+        if (operation && !resetInput) {
+          calculate();
+        }
+        
+        previousInput = currentInput;
+        operation = op;
+        resetInput = true;
+      }
+
+      // Perform calculation
+      function calculate() {
+        let result;
+        const prevValue = parseFloat(previousInput);
+        const currentValue = parseFloat(currentInput);
+        
+        if (isNaN(prevValue) || isNaN(currentValue)) return;
+        
+        switch (operation) {
+          case '+':
+            result = prevValue + currentValue;
+            break;
+          case '-':
+            result = prevValue - currentValue;
+            break;
+          case '*':
+            result = prevValue * currentValue;
+            break;
+          case '/':
+            result = prevValue / currentValue;
+            break;
+          default:
+            return;
+        }
+        
+        currentInput = result.toString();
+        operation = null;
+        updateDisplay();
+      }
+
+      // Clear calculator
+      function clearAll() {
+        currentInput = '0';
+        previousInput = '';
+        operation = null;
+        updateDisplay();
+      }
+
+      // Event listeners for buttons
+      document.getElementById('zero').addEventListener('click', () => inputNumber('0'));
+      document.getElementById('one').addEventListener('click', () => inputNumber('1'));
+      document.getElementById('two').addEventListener('click', () => inputNumber('2'));
+      document.getElementById('three').addEventListener('click', () => inputNumber('3'));
+      document.getElementById('four').addEventListener('click', () => inputNumber('4'));
+      document.getElementById('five').addEventListener('click', () => inputNumber('5'));
+      document.getElementById('six').addEventListener('click', () => inputNumber('6'));
+      document.getElementById('seven').addEventListener('click', () => inputNumber('7'));
+      document.getElementById('eight').addEventListener('click', () => inputNumber('8'));
+      document.getElementById('nine').addEventListener('click', () => inputNumber('9'));
+      
+      document.getElementById('decimal').addEventListener('click', inputDecimal);
+      
+      document.getElementById('add').addEventListener('click', () => inputOperator('+'));
+      document.getElementById('subtract').addEventListener('click', () => inputOperator('-'));
+      document.getElementById('multiply').addEventListener('click', () => inputOperator('*'));
+      document.getElementById('divide').addEventListener('click', () => inputOperator('/'));
+      
+      document.getElementById('equals').addEventListener('click', calculate);
+      document.getElementById('clear').addEventListener('click', clearAll);
+
+      // Initialize display
+      updateDisplay();
+    });
+  </script>
+
+  <!-- FreeCodeCamp Test Script -->
+  <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+</body>
+</html>
